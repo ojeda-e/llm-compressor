@@ -2,8 +2,162 @@
 requires = ["setuptools", "wheel", "setuptools_scm==8.2.0"]
 build-backend = "setuptools.build_meta"
 
+# this block is equivalent to use_scm_version in setup.py
+[tool.setuptools_scm]
+write_to = "src/llmcompressor/version.py"  # Where to write the version
+version_scheme = "python-simplified-semver"  # How to format versions
+local_scheme = "dirty-tag"  # How to handle local/dirty versions
+
 [tool.mypy]
-files = "src/guidellm"
+files = "src/llmcompressor"
+
+[project]
+name = "llmcompressor"
+authors = [{name= "Neural Magic Inc.", email= "support@neuralmagic.com"}]
+description =  """
+A library for compressing large language models utilizing the
+latest techniques and research in the field for both training
+aware and posttraining techniques. The library is designed to
+be flexible and easy to use on top of PyTorch and HuggingFace
+Transformers, allowing for quick experimentation.
+"""
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dynamic = ["version"]
+keywords = [
+    "llmcompressor",
+    "llms",
+    "large language models",
+    "transformers",
+    "pytorch",
+    "huggingface",
+    "compressors",
+    "compression",
+    "quantization",
+    "pruning",
+    "sparsity",
+    "optimization",
+    "model optimization",
+    "model compression"
+]
+classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: POSIX :: Linux",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Scientific/Engineering :: Mathematics",
+        "Topic :: Software Development",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    # Nightly versions (equivalent to BUILD_TYPE == "nightly")
+    "loguru>=0.7.2",
+    "pyyaml>=6.0.1",
+    "numpy>=2.0.0",
+    "requests>=2.32.2",
+    "tqdm>=4.66.3",
+    "torch>=2.7.0",
+    "transformers>=4.54.0",
+    "datasets>=4.0.0",
+    "accelerate>=1.6.0",
+    "nvidia-ml-py>=12.560.30; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "pillow>=10.4.0",
+    "compressed-tensors>=0.12.3a2",
+]
+
+release = [
+    # Release versions (equivalent to BUILD_TYPE == "release")
+    "loguru>=0.7.2,<=0.7.3",
+    "pyyaml>=6.0.1,<=6.0.3",
+    "numpy>=2.0.0,<=2.3.3",
+    "requests>=2.32.2,<=2.32.5",
+    "tqdm>=4.66.3,<=4.67.1",
+    "torch>=2.7.0,<=2.8.0",
+    "transformers>=4.54.0,<=4.56.2",
+    "datasets>=4.0.0,<=4.1.1",
+    "accelerate>=1.6.0,<=1.10.1",
+    "nvidia-ml-py>=12.560.30,<=13.580.82; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "pillow>=10.4.0,<=11.3.0",
+    "compressed-tensors==0.12.2",
+]
+
+[project.urls]
+Homepage = "https://docs.vllm.ai/projects/llm-compressor/"
+Source = "https://github.com/vllm-project/llm-compressor"
+
+[dependency-groups]
+dev = [
+    { include-group = "tests" },
+    { include-group = "docs" },
+]
+tests = [
+    # testing framework
+    "pytest>=6.0.0",
+    "pytest-mock>=3.6.0",
+    "pytest-rerunfailures>=13.0",
+    "lm_eval==0.4.5",
+    # test dependencies
+    "beautifulsoup4~=4.12.3",
+    "cmarkgfm>=2024.1.14",
+    "trl>=0.10.1",
+    "pandas<2.3.0",
+    "torchvision",
+    "librosa==0.11.0",
+    "soundfile",
+    "torchcodec; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    # linting, formatting, and type checking
+    "mypy~=1.10.0",
+    "ruff~=0.4.8",
+    # pre commit hooks
+    "pre-commit"]
+
+docs = [
+    "mkdocs",
+    "mkdocs-material[imaging]",
+    "markdown",
+    "pymdown-extensions",
+    "mkdocs-section-index",
+    "mkdocs-minify-plugin",
+    "mkdocs-api-autonav",
+    "mkdocstrings-python",
+    "mkdocs-gen-files",
+    "mkdocs-nav-weight",
+    ]
+
+
+[project.scripts]
+llmcompressor-trace = "llmcompressor.transformers.tracing.debug:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["llmcompressor", "llmcompressor.*"]
+exclude = ["*.__pycache__.*"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.uv]
+# Declare that development dependencies and release dependencies are incompatible
+# This prevents uv from trying to resolve them together
+conflicts = [
+    [
+        { extra = "release" },
+        { extra = "dev" },
+    ],
+]
+
 
 [tool.ruff]
 extend-exclude = ["env", "src/llmcompressor/transformers/tracing/", "src/llmcompressor/version.py"]
